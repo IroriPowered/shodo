@@ -1,0 +1,20 @@
+{
+  "Group": "IroriPowered",
+  "Name": "Shodo",
+  "Version": "1.0.0",
+  "Website": "https://www.irori.cc/",
+  "Description": "Readable Japanese chat in Hytale!",
+  "Main": "cc.irori.shodo.Shodo",
+  "Authors": [
+    {
+      "Name": "KabanFriends",
+      "Url": "https://github.com/KabanFriends"
+    }
+  ],
+  "ServerVersion": "*",
+  "IncludesAssetPack": true,
+  "Dependencies": {
+    "Buuz135:MultipleHUD": "*"
+  },
+  "OptionalDependencies": {}
+}
