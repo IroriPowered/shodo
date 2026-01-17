@@ -1,6 +1,10 @@
 package cc.irori.shodo;
 
+import com.hypixel.hytale.common.plugin.PluginIdentifier;
+import com.hypixel.hytale.common.semver.SemverRange;
+import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
@@ -17,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Shodo extends JavaPlugin {
+
+    private static final PluginIdentifier SCAFFOLD_PLUGIN = new PluginIdentifier("IroriPowered", "Scaffold_Hytale");
 
     private final BuiltInFontdata fontData = new BuiltInFontdata(1.35);
     private final Map<UUID, TextBoxUI> playerTextUIs = new ConcurrentHashMap<>();
@@ -57,6 +63,13 @@ public class Shodo extends JavaPlugin {
                 removed.shutdown();
             }
         });
+
+        getEventRegistry().registerAsyncGlobal(PlayerChatEvent.class, future -> future.thenApply(event -> {
+            if (!HytaleServer.get().getPluginManager().hasPlugin(SCAFFOLD_PLUGIN, SemverRange.WILDCARD)) {
+                ShodoAPI.getInstance().broadcastMessage(event.getSender().getUsername() + ": " + event.getContent());
+            }
+            return event;
+        }));
     }
 
     @Override
