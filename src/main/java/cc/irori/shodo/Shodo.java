@@ -1,8 +1,6 @@
 package cc.irori.shodo;
 
-import cc.irori.shodo.japanize.Japanizer;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
@@ -12,6 +10,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +29,7 @@ public class Shodo extends JavaPlugin {
 
     @Override
     protected void start() {
+        new ShodoAPI(this);
         fontData.load();
 
         getEventRegistry().register(PlayerConnectEvent.class, event -> {
@@ -57,24 +57,18 @@ public class Shodo extends JavaPlugin {
                 removed.shutdown();
             }
         });
-
-        getEventRegistry().registerAsyncGlobal(PlayerChatEvent.class, future -> future.thenApply(event -> {
-            chatExecutor.submit(() -> {
-                String japanize = Japanizer.japanizeString(event.getContent());
-                if (japanize == null) {
-                    japanize = event.getContent();
-                }
-
-                for (TextBoxUI textBoxUI : playerTextUIs.values()) {
-                    textBoxUI.addMessage(event.getSender().getUsername() + ": " + japanize);
-                }
-            });
-            return event;
-        }));
     }
 
     @Override
     protected void shutdown() {
         chatExecutor.shutdownNow();
+    }
+
+    public TextBoxUI getTextBoxUI(PlayerRef playerRef) {
+        return playerTextUIs.get(playerRef.getUuid());
+    }
+
+    public Set<TextBoxUI> getTextBoxUIs() {
+        return Set.copyOf(playerTextUIs.values());
     }
 }

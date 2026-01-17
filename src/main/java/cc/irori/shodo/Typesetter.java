@@ -1,5 +1,7 @@
 package cc.irori.shodo;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -50,14 +52,18 @@ public class Typesetter {
     }
 
     public void addMessage(String text) {
+        addMessage(text, null);
+    }
+
+    public void addMessage(String text, Color color) {
         if (text == null) return;
         long now = System.currentTimeMillis();
-        List<List<RenderGlyph>> wrapped = wrapText(text);
+        List<List<RenderGlyph>> wrapped = wrapText(text, color);
 
         synchronized (lock) {
             for (int i = wrapped.size() - 1; i >= 0; i--) {
                 List<RenderGlyph> lineGlyphs = wrapped.get(i);
-                lines.addFirst(new TextMessage(lineGlyphs, now));
+                lines.addFirst(new TextMessage(lineGlyphs, color, now));
             }
             pruneLinesByCountAndHeight();
         }
@@ -70,10 +76,10 @@ public class Typesetter {
 
         synchronized (lock) {
             double currentY = startY;
-            for (TextMessage TextMessage : lines) {
+            for (TextMessage message : lines) {
                 if (currentY + lineHeight > maxY) break;
-                for (RenderGlyph g : TextMessage.glyphs) {
-                    draw.add(new RenderGlyph(g.character(), startX + g.x(), currentY));
+                for (RenderGlyph g : message.glyphs) {
+                    draw.add(new RenderGlyph(g.character(), startX + g.x(), currentY, g.color()));
                 }
                 currentY += lineHeight;
             }
@@ -99,7 +105,7 @@ public class Typesetter {
         }
     }
 
-    private List<List<RenderGlyph>> wrapText(String text) {
+    private List<List<RenderGlyph>> wrapText(String text, Color color) {
         List<List<RenderGlyph>> wrapped = new ArrayList<>();
         if (text.isEmpty()) {
             wrapped.add(Collections.emptyList());
@@ -126,7 +132,7 @@ public class Typesetter {
                 currentLineWidth = 0;
             }
 
-            currentLine.add(new RenderGlyph(c, currentLineWidth, 0));
+            currentLine.add(new RenderGlyph(c, currentLineWidth, 0, color));
             currentLineWidth += cw;
         }
         if (!currentLine.isEmpty()) wrapped.add(currentLine);
@@ -164,13 +170,6 @@ public class Typesetter {
         }
     }
 
-    static class TextMessage {
-        final List<RenderGlyph> glyphs;
-        final long createdAtMs;
-
-        TextMessage(List<RenderGlyph> glyphs, long createdAtMs) {
-            this.glyphs = glyphs;
-            this.createdAtMs = createdAtMs;
-        }
+    record TextMessage(List<RenderGlyph> glyphs, @Nullable Color color, long createdAtMs) {
     }
 }

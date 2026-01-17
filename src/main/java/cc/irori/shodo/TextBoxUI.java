@@ -7,9 +7,13 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Locale;
 
 public class TextBoxUI extends CustomUIHud {
+
+    private static final float SHADOW_COLOR_SCALE = 0.25f;
 
     private final Player player;
     private final PlayerRef playerRef;
@@ -18,7 +22,7 @@ public class TextBoxUI extends CustomUIHud {
     private final Typesetter typesetter;
     private final FontData font;
 
-    private String mainColor = "#ffffff";
+    private Color defaultColor = Color.WHITE;
 
     public TextBoxUI(Player player, PlayerRef playerRef, AnchorBuilder anchor, FontData font) {
         this(player, playerRef, anchor, font, 1);
@@ -43,31 +47,48 @@ public class TextBoxUI extends CustomUIHud {
         uiCommandBuilder.append("Shodo/TextBox.ui");
         uiCommandBuilder.setObject("#TextBox.Anchor", anchor.build());
 
-        addGlyphs(uiCommandBuilder, "#2A2A2A", font.getScale(), font.getScale());
-        addGlyphs(uiCommandBuilder, mainColor, 0, 0);
-    }
-
-    private void addGlyphs(UICommandBuilder uiCommandBuilder, String color, double xOffset, double yOffset) {
         for (RenderGlyph glyph : typesetter.calculateRenderQueue(0, 0)) {
-            String hex = String.format("%04x", (int) glyph.character()).toUpperCase(Locale.ROOT);
-            uiCommandBuilder.appendInline("#TextBox", String.format(
-                    "Group { Anchor: (Left: %f, Top: %f, Width: %f, Height: %f); Background: (TexturePath: \"Shodo/Glyphs/u%s.png\", Color: %s); }",
-                    glyph.x() + xOffset,
-                    glyph.y() + yOffset,
-                    16 * font.getScale(),
-                    16 * font.getScale(),
-                    hex,
-                    color
-            ));
+            drawGlyph(uiCommandBuilder, glyph, glyph.x(), glyph.y(), true);
+        }
+        for (RenderGlyph glyph : typesetter.calculateRenderQueue(0, 0)) {
+            drawGlyph(uiCommandBuilder, glyph, glyph.x(), glyph.y(), false);
         }
     }
 
-    public void setMainColor(String mainColor) {
-        this.mainColor = mainColor;
+    private void drawGlyph(UICommandBuilder uiCommandBuilder, RenderGlyph glyph, double x, double y, boolean asShadow) {
+        Color color = glyph.color() != null ? glyph.color() : defaultColor;
+        if (asShadow) {
+            drawGlyphWithColor(uiCommandBuilder, glyph, x + font.getScale(), y + font.getScale(), getShadowColor(color));
+            return;
+        }
+        drawGlyphWithColor(uiCommandBuilder, glyph, x, y, color);
+    }
+
+    private void drawGlyphWithColor(UICommandBuilder uiCommandBuilder, RenderGlyph glyph, double x, double y, Color color) {
+        String codepoint = String.format("%04x", (int) glyph.character()).toUpperCase(Locale.ROOT);
+        uiCommandBuilder.appendInline("#TextBox", String.format(
+                "Group { Anchor: (Left: %f, Top: %f, Width: %f, Height: %f); Background: (TexturePath: \"Shodo/Glyphs/u%s.png\", Color: #%02x%02x%02x); }",
+                x,
+                y,
+                16 * font.getScale(),
+                16 * font.getScale(),
+                codepoint,
+                color.getRed(),
+                color.getGreen(),
+                color.getBlue()
+        ));
+    }
+
+    public void setDefaultColor(Color color) {
+        this.defaultColor = color;
     }
 
     public void addMessage(String message) {
-        typesetter.addMessage(message);
+        addMessage(message, null);
+    }
+
+    public void addMessage(String message, @Nullable Color color) {
+        typesetter.addMessage(message, color);
         updateHud();
     }
 
@@ -82,5 +103,14 @@ public class TextBoxUI extends CustomUIHud {
 
     public void updateHud() {
         MultipleHUD.getInstance().setCustomHud(player, playerRef, "Shodo_" + this.hashCode(), this);
+    }
+
+    private static Color getShadowColor(Color color) {
+        return new Color(
+                (int) Math.clamp(color.getRed() * SHADOW_COLOR_SCALE, 0, 255),
+                (int) Math.clamp(color.getGreen() * SHADOW_COLOR_SCALE, 0, 255),
+                (int) Math.clamp(color.getBlue() * SHADOW_COLOR_SCALE, 0, 255),
+                color.getAlpha()
+        );
     }
 }

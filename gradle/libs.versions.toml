@@ -1,13 +1,5 @@
 [versions]
-gradle-shadow = "9.3.1"
-guava = "33.5.0-jre"
-lang3 = "3.20.0"
 multiplehud = "1.0.1"
 
 [libraries]
-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
-lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "lang3" }
 multiplehud = { group = "com.buuz135", name = "MultipleHUD", version.ref = "multiplehud" }
-
-[plugins]
-gradle-shadow = { id = "com.gradleup.shadow", version.ref = "gradle-shadow" }

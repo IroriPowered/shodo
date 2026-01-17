@@ -1,4 +1,7 @@
 package cc.irori.shodo;
 
-public record RenderGlyph(char character, double x, double y) {
+import javax.annotation.Nullable;
+import java.awt.*;
+
+public record RenderGlyph(char character, double x, double y, @Nullable Color color) {
 }
