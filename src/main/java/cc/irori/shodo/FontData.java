@@ -2,7 +2,11 @@ package cc.irori.shodo;
 
 public interface FontData {
 
-    int getCharWidth(char c);
+    GlyphMeta getGlyph(char c);
+
+    int getTileSize();
+
+    int getAtlasSize();
 
     int getLineHeight();
 

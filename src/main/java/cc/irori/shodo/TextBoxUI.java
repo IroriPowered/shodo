@@ -65,18 +65,34 @@ public class TextBoxUI extends CustomUIHud {
     }
 
     private void drawGlyphWithColor(UICommandBuilder uiCommandBuilder, RenderGlyph glyph, double x, double y, Color color) {
-        String codepoint = String.format("%04x", (int) glyph.character()).toUpperCase(Locale.ROOT);
-        uiCommandBuilder.appendInline("#TextBox", String.format(
-                "Group { Anchor: (Left: %f, Top: %f, Width: %f, Height: %f); Background: (TexturePath: \"Shodo/Glyphs/u%s.png\", Color: #%02x%02x%02x); }",
-                x,
-                y,
-                16 * font.getScale(),
-                16 * font.getScale(),
-                codepoint,
-                color.getRed(),
-                color.getGreen(),
-                color.getBlue()
-        ));
+        if (glyph.meta().atlas() == null) {
+            uiCommandBuilder.appendInline("#TextBox", String.format(
+                    "Group { Anchor: (Left: %f, Top: %f, Width: %f, Height: %f); Background: (TexturePath: \"Shodo/Glyphs/invalid.png\", Color: #%02x%02x%02x); }",
+                    x,
+                    y,
+                    font.getTileSize() * font.getScale(),
+                    font.getTileSize() * font.getScale(),
+                    color.getRed(),
+                    color.getGreen(),
+                    color.getBlue()
+            ));
+        } else {
+            uiCommandBuilder.appendInline("#TextBox", String.format(
+                    "Group { Anchor: (Left: %f, Top: %f, Width: %f, Height: %f); Background: PatchStyle(TexturePath: \"Shodo/Glyphs/%s.png\", Area: (Left: %d, Top: %d, Right: %d, Bottom: %d), Color: #%02x%02x%02x); }",
+                    x,
+                    y,
+                    font.getTileSize() * font.getScale(),
+                    font.getTileSize() * font.getScale(),
+                    glyph.meta().atlas(),
+                    glyph.meta().imageX(),
+                    glyph.meta().imageY(),
+                    font.getAtlasSize() - glyph.meta().imageX() - font.getTileSize(),
+                    font.getAtlasSize() - glyph.meta().imageY() - font.getTileSize(),
+                    color.getRed(),
+                    color.getGreen(),
+                    color.getBlue()
+            ));
+        }
     }
 
     public void setDefaultColor(Color color) {

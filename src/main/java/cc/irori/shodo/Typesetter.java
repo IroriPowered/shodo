@@ -79,7 +79,7 @@ public class Typesetter {
             for (TextMessage message : lines) {
                 if (currentY + lineHeight > maxY) break;
                 for (RenderGlyph g : message.glyphs) {
-                    draw.add(new RenderGlyph(g.character(), startX + g.x(), currentY, g.color()));
+                    draw.add(new RenderGlyph(g.character(), g.meta(), startX + g.x(), currentY, g.color()));
                 }
                 currentY += lineHeight;
             }
@@ -125,14 +125,15 @@ public class Typesetter {
                 continue;
             }
 
-            double cw = (font.getCharWidth(c) + font.getSpacingWidth()) * font.getScale();
+            GlyphMeta meta = font.getGlyph(c);
+            double cw = (meta.width() + font.getSpacingWidth()) * font.getScale();
             if (currentLineWidth + cw > this.boxWidth && !currentLine.isEmpty()) {
                 wrapped.add(currentLine);
                 currentLine = new ArrayList<>();
                 currentLineWidth = 0;
             }
 
-            currentLine.add(new RenderGlyph(c, currentLineWidth, 0, color));
+            currentLine.add(new RenderGlyph(c, meta, currentLineWidth, 0, color));
             currentLineWidth += cw;
         }
         if (!currentLine.isEmpty()) wrapped.add(currentLine);

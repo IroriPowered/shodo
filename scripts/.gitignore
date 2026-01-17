@@ -1,2 +1,4 @@
 output_textures/
+atlas/
+charmap.json
 widths.json

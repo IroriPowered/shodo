@@ -24,7 +24,7 @@ public class Shodo extends JavaPlugin {
 
     private static final PluginIdentifier SCAFFOLD_PLUGIN = new PluginIdentifier("IroriPowered", "Scaffold_Hytale");
 
-    private final BuiltInFontdata fontData = new BuiltInFontdata(1.35);
+    private final BuiltInFontData fontData = new BuiltInFontData(1.35);
     private final Map<UUID, TextBoxUI> playerTextUIs = new ConcurrentHashMap<>();
 
     private final ExecutorService chatExecutor = Executors.newCachedThreadPool();
