@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 group = "cc.irori"
@@ -13,4 +14,23 @@ repositories {
 dependencies {
     compileOnly(files("libs/HytaleServer.jar"))
     compileOnly(libs.multiplehud)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "IroriPoweredMaven"
+            url = uri("https://maven.irori.cc/repository/public/")
+            credentials {
+                username = project.findProperty("irori_maven_username")?.toString() ?: ""
+                password = project.findProperty("irori_maven_password")?.toString() ?: ""
+            }
+        }
+    }
 }
