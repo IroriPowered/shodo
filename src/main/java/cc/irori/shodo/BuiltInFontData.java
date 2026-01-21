@@ -12,6 +12,12 @@ import java.util.Map;
 
 public class BuiltInFontData implements FontData {
 
+    public static final BuiltInFontData INSTANCE = new BuiltInFontData(1.0);
+
+    static {
+        INSTANCE.load();
+    }
+
     private static final GlyphMeta DEFAULT_GLYPH = new GlyphMeta(null, 0, 0, 16);
 
     private final double scale;
@@ -80,5 +86,11 @@ public class BuiltInFontData implements FontData {
     @Override
     public double getScale() {
         return scale;
+    }
+
+    public BuiltInFontData ofScale(double scale) {
+        BuiltInFontData fontData = new BuiltInFontData(scale);
+        fontData.glyphs = this.glyphs;
+        return fontData;
     }
 }

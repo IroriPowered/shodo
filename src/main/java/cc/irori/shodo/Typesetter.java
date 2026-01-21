@@ -23,11 +23,11 @@ public class Typesetter {
     private ScheduledExecutorService scheduler;
     private volatile long lineLifespanMillis = 10_000;
 
-    public Typesetter(int width, int height, FontData font, Runnable updateCallback) {
+    protected Typesetter(int width, int height, FontData font, @Nullable Runnable updateCallback) {
         this(width, height, font, updateCallback, 1);
     }
 
-    public Typesetter(int width, int height, FontData font, Runnable updateCallback, int cleanupPeriodSeconds) {
+    protected Typesetter(int width, int height, FontData font, @Nullable Runnable updateCallback, int cleanupPeriodSeconds) {
         if (width <= 0 || height <= 0) throw new IllegalArgumentException("Invalid box size");
         if (font == null) throw new IllegalArgumentException("FontData cannot be null");
         this.boxWidth = width;
@@ -69,7 +69,7 @@ public class Typesetter {
         }
     }
 
-    public List<RenderGlyph> calculateRenderQueue(int startX, int startY) {
+    protected List<RenderGlyph> calculateRenderQueue(int startX, int startY) {
         List<RenderGlyph> draw = new ArrayList<>();
         double lineHeight = font.getLineHeight() * font.getScale();
         int maxY = startY + boxHeight;
@@ -90,6 +90,9 @@ public class Typesetter {
     public void clear() {
         synchronized (lock) {
             lines.clear();
+        }
+        if (updateCallback != null) {
+            updateCallback.run();
         }
     }
 
@@ -165,7 +168,9 @@ public class Typesetter {
                 }
             }
             if (removed) {
-                updateCallback.run();
+                if (updateCallback != null) {
+                    updateCallback.run();
+                }
                 pruneLinesByCountAndHeight();
             }
         }

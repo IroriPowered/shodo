@@ -24,8 +24,7 @@ public class Shodo extends JavaPlugin {
 
     private static final PluginIdentifier SCAFFOLD_PLUGIN = new PluginIdentifier("IroriPowered", "Scaffold_Hytale");
 
-    private final BuiltInFontData fontData = new BuiltInFontData(1.35);
-    private final Map<UUID, TextBoxUI> playerTextUIs = new ConcurrentHashMap<>();
+    private final Map<UUID, ChatBoxHud> playerChatUIs = new ConcurrentHashMap<>();
 
     private final ExecutorService chatExecutor = Executors.newCachedThreadPool();
 
@@ -36,10 +35,9 @@ public class Shodo extends JavaPlugin {
     @Override
     protected void start() {
         new ShodoAPI(this);
-        fontData.load();
 
         getEventRegistry().register(PlayerConnectEvent.class, event -> {
-            if (playerTextUIs.containsKey(event.getPlayerRef().getUuid())) {
+            if (playerChatUIs.containsKey(event.getPlayerRef().getUuid())) {
                 return;
             }
             PlayerRef ref = event.getPlayerRef();
@@ -51,14 +49,14 @@ public class Shodo extends JavaPlugin {
                     .setWidth(Value.of(800))
                     .setHeight(Value.of(300));
 
-            TextBoxUI textBoxUI = new TextBoxUI(player, ref, anchor, fontData);
-            playerTextUIs.put(ref.getUuid(), textBoxUI);
-            textBoxUI.updateHud();
+            ChatBoxHud chatBoxHud = new ChatBoxHud(player, ref, anchor, BuiltInFontData.INSTANCE.ofScale(1.3));
+            playerChatUIs.put(ref.getUuid(), chatBoxHud);
+            chatBoxHud.updateHud();
         });
 
         getEventRegistry().register(PlayerDisconnectEvent.class, event -> {
             UUID playerUUID = event.getPlayerRef().getUuid();
-            TextBoxUI removed = playerTextUIs.remove(playerUUID);
+            ChatBoxHud removed = playerChatUIs.remove(playerUUID);
             if (removed != null) {
                 removed.shutdown();
             }
@@ -77,11 +75,11 @@ public class Shodo extends JavaPlugin {
         chatExecutor.shutdownNow();
     }
 
-    public TextBoxUI getTextBoxUI(PlayerRef playerRef) {
-        return playerTextUIs.get(playerRef.getUuid());
+    public ChatBoxHud getTextBoxUI(PlayerRef playerRef) {
+        return playerChatUIs.get(playerRef.getUuid());
     }
 
-    public Set<TextBoxUI> getTextBoxUIs() {
-        return Set.copyOf(playerTextUIs.values());
+    public Set<ChatBoxHud> getTextBoxUIs() {
+        return Set.copyOf(playerChatUIs.values());
     }
 }

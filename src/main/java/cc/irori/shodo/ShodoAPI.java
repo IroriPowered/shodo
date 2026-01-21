@@ -5,6 +5,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import javax.annotation.Nullable;
 import java.awt.*;
 
+// TODO: move chat API to its own subplugin
 public class ShodoAPI {
 
     private static ShodoAPI instance;
@@ -21,8 +22,8 @@ public class ShodoAPI {
     }
 
     public void broadcastMessage(String message, @Nullable Color color) {
-        for (TextBoxUI textBoxUI : shodo.getTextBoxUIs()) {
-            textBoxUI.addMessage(message, color);
+        for (ChatBoxHud chatBoxHud : shodo.getTextBoxUIs()) {
+            chatBoxHud.addMessage(message, color);
         }
     }
 
@@ -31,9 +32,9 @@ public class ShodoAPI {
     }
 
     public void sendMessage(PlayerRef playerRef, String message, @Nullable Color color) {
-        TextBoxUI textBoxUI = shodo.getTextBoxUI(playerRef);
-        if (textBoxUI != null) {
-            textBoxUI.addMessage(message, color);
+        ChatBoxHud chatBoxHud = shodo.getTextBoxUI(playerRef);
+        if (chatBoxHud != null) {
+            chatBoxHud.addMessage(message, color);
         }
     }
 
