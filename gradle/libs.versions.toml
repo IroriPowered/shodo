@@ -1,5 +1,7 @@
 [versions]
+hytale = "2026.01.22-6f8bdbdc4"
 multiplehud = "1.0.1"
 
 [libraries]
+hytale = { group = "com.hypixel.hytale", name = "Server", version.ref = "hytale" }
 multiplehud = { group = "com.buuz135", name = "MultipleHUD", version.ref = "multiplehud" }

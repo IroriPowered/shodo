@@ -8,11 +8,13 @@ version = "1.2.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://maven.hytale.com/release")
+    maven("https://maven.hytale.com/pre-release")
     maven("https://maven.hytale-modding.info/releases/")
 }
 
 dependencies {
-    compileOnly(files("libs/HytaleServer.jar"))
+    compileOnly(libs.hytale)
     compileOnly(libs.multiplehud)
 }
 
