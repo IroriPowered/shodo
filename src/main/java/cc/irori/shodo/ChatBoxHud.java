@@ -66,5 +66,6 @@ public class ChatBoxHud extends CustomUIHud {
 
     public void updateHud() {
         player.getHudManager().addCustomHud(playerRef, this);
+        this.show();
     }
 }
