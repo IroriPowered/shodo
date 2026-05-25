@@ -1,6 +1,5 @@
 package cc.irori.shodo;
 
-import com.buuz135.mhud.MultipleHUD;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
@@ -9,6 +8,7 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.UUID;
 
 public class ChatBoxHud extends CustomUIHud {
 
@@ -23,7 +23,7 @@ public class ChatBoxHud extends CustomUIHud {
     }
 
     protected ChatBoxHud(Player player, PlayerRef playerRef, AnchorBuilder anchor, FontData font, int cleanupPeriodSeconds) {
-        super(playerRef);
+        super(playerRef, "Shodo_" + UUID.randomUUID());
         if (anchor.getWidth() == null || anchor.getHeight() == null) {
             throw new IllegalArgumentException("Anchor must have both width and height defined.");
         }
@@ -65,6 +65,6 @@ public class ChatBoxHud extends CustomUIHud {
     }
 
     public void updateHud() {
-        MultipleHUD.getInstance().setCustomHud(player, playerRef, "Shodo_" + this.hashCode(), this);
+        player.getHudManager().addCustomHud(playerRef, this);
     }
 }

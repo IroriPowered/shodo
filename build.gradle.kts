@@ -15,7 +15,6 @@ repositories {
 
 dependencies {
     compileOnly(libs.hytale)
-    compileOnly(libs.multiplehud)
 }
 
 publishing {

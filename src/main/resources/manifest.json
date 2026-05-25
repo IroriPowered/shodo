@@ -13,8 +13,6 @@
   ],
   "ServerVersion": "*",
   "IncludesAssetPack": true,
-  "Dependencies": {
-    "Buuz135:MultipleHUD": "*"
-  },
+  "Dependencies": {},
   "OptionalDependencies": {}
 }
